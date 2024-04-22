@@ -2,7 +2,7 @@ use crate::server::{Server, ServerImpl};
 use crate::client::{Client, ClientIntr};
 use std::vec::Vec;
 use std::env;
-use std::env::args;
+use std::sync::{Arc};
 
 mod server;
 mod client;
@@ -17,10 +17,11 @@ fn main() {
             server.run();
         }
         "client" => {
-            let client = Client {
-                src_port:  src_port.parse::<u16>().unwrap(),
-                dst_port : dst_port.parse::<u16>().unwrap()
-            };
+            let client = Arc::new(Client::new(
+                src_port.parse::<u16>().unwrap(),
+                dst_port.parse::<u16>().unwrap()
+            ));
+            Client::run_signal_handler(client.clone());
             client.run();
         }
         other => {
